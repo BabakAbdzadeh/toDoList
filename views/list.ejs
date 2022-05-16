@@ -6,8 +6,22 @@
   </head>
   <body>
 
+
+
     <!-- Marker for a variable -->
     <h1>Today is: <%= kindOfDay %></h1>
+    <br>
+
+
+<!-- scriplet tags -->
+<!-- for each line of js code we should use the tag -->
+<!-- 'Scriptlet' tag => < + %, basic code!, for control-flow, no output -->
+ <% if (kindOfDay === "Saturday" || kindOfDay === "Sunday"){ %>
+   <h1 style = "color: purple"> <%= kindOfDay %> toDo List:</h1>
+<% }else { %>
+   <h1 style = "color: blue"> <%= kindOfDay %> toDo List:</h1>
+<% } %>
+
 
 
   </body>

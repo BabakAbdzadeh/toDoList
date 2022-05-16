@@ -20,7 +20,7 @@ app.set('view engine', 'ejs');
 
    // Express is going to look inside a folder called views and it's going to look
    // for a file that's called list and it has the extension of ejs.
-   // passing single variable and value in an object
+   // passing single variable and value as an object
    res.render("list", {kindOfDay: day});
 
 
