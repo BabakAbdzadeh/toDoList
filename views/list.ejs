@@ -1,28 +1,36 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>To Do List</title>
-  </head>
-  <body>
+
+<head>
+  <meta charset="utf-8">
+  <title>To Do List</title>
+</head>
+
+<body>
 
 
 
-    <!-- Marker for a variable -->
-    <h1>Today is: <%= kindOfDay %></h1>
-    <br>
+  <!-- Marker for a variable -->
+  <h1><%= kindOfDay %></h1>
 
 
-<!-- scriplet tags -->
-<!-- for each line of js code we should use the tag -->
-<!-- 'Scriptlet' tag => < + %, basic code!, for control-flow, no output -->
- <% if (kindOfDay === "Saturday" || kindOfDay === "Sunday"){ %>
-   <h1 style = "color: purple"> <%= kindOfDay %> toDo List:</h1>
-<% }else { %>
-   <h1 style = "color: blue"> <%= kindOfDay %> toDo List:</h1>
-<% } %>
+  <ul>
+    <li>Buy food</li>
+    <li>Cook food</li>
+    <li>Eat food</li>
+
+    <% for( var i=0; i<items.length; i++){ %>
+    <li><%= items[i] %></li>
+    <% } %>
+
+  </ul>
+
+  <form action="\" method="post">
+    <input type="text" name="toDo" placeholder="To do!">
+    <input type="submit" value="submit">
+  </form>
 
 
+</body>
 
-  </body>
 </html>
