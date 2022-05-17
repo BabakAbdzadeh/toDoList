@@ -4,31 +4,40 @@
 <head>
   <meta charset="utf-8">
   <title>To Do List</title>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
 
 
+  <div class="box" id="heading">
+    <!-- Marker for a variable -->
+    <h1><%= pageTitle %></h1>
 
-  <!-- Marker for a variable -->
-  <h1><%= kindOfDay %></h1>
+  </div>
 
 
-  <ul>
-    <li>Buy food</li>
-    <li>Cook food</li>
-    <li>Eat food</li>
+  <div class="box">
 
+    <!-- Genarating rows dynamicaly using JS and EJS -->
     <% for( var i=0; i<items.length; i++){ %>
-    <li><%= items[i] %></li>
+    <div class="item">
+
+      <input type="checkbox">
+      <!-- its new way due to CSS! -->
+      <p><%= items[i] %></p>
+    </div>
     <% } %>
 
-  </ul>
+<!--item class added to style it similary to other items on the page   -->
+    <form  class="item "action="\" method="post">
+      <input type="text" name="toDo" placeholder="New Item" autocomplete="off">
+      <!-- using page's title to determine the action page of the input data -->
+      <button type="submit" name="submit" value= <%=pageTitle%>>+</button>
+    </form>
 
-  <form action="\" method="post">
-    <input type="text" name="toDo" placeholder="To do!">
-    <input type="submit" value="submit">
-  </form>
+  </div>
+
 
 
 </body>
