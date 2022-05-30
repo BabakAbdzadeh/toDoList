@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
-
+const mongoose = require('mongoose');
 
 
 // Telling our app to use ejs
@@ -14,12 +14,43 @@ app.use(bodyParser.urlencoded({
 app.use(express.static("public"));
 
 
+
+// connecting mongoose to database
+mongoose.connect("mongodb://localhost:27017/todolistDB");
+
+// setting up magnoose
+// schema of each document
+const itemsSchema = {
+  name: String
+}
+
+// model for mongoose
+const Item = mongoose.model('Item', itemsSchema);
+
+//  creating data for our model
+const item1 = new Item({
+  name: "wake up early"
+});
+const item2 = new Item({
+  name: "Go to the library"
+});
+const item3 = new Item({
+  name: "Sleep in the library"
+});
+
+const defaultItems = [item1, item2, item3];
+
+
 // Global variables:
-let itemsarray = [];
+let itemsArray = [];
 let workTasks = [];
 
+
+
 // HOME PAGE GET/POST application
-app.get("/", (req, res) => {
+app.get("/", (req, res)=> {
+
+
 
   // storing the day of week in a variable
   var options = {
@@ -30,30 +61,54 @@ app.get("/", (req, res) => {
   var today = new Date();
   var day = today.toLocaleDateString("en-US", options); // E.G. Saturday, September 17, 2016
 
-  // Express is going to look inside a folder called views and it's going to look
-  // for a file that's called list and it has the extension of ejs.
-  // passing single variable and value as an object
-  res.render("list", {
-    pageTitle: day,
-    items: itemsarray,
-  });
+// getting data from DB
+  Item.find((err, results)=>{
+// avoids duplication
+    if(results.length === 0){
+      // Adds data to DB
+      Item.insertMany(defaultItems, (err) =>{
+        if(err){
+           console.log(err)
+         }else{
+           console.log('Success in saving data to DB')};
+      });
+      // !! this code is inside if
+      // redirect to the main route again, otherwise data will not show up on the page because of if statement
+      res.redirect("/");
+    }else{
+    // renders data from DB
+         res.render("list", {
+           pageTitle: day,
+           items: results,
+         });
+       };
+    });
 });
-
-
 // gets data from form, and pass after doing logic stuff redirect it
 app.post('/', (req, res) => {
   let item = req.body.toDo;
 
+  const newItem = new Item({
+    name: item
+  });
+
+newItem.save();
+res.redirect('/');
+
+
+
+
+
   // using recieved value from button to decide which page gonna get the data
-  if(req.body.submit === "Work"){
-    workTasks.push(item);
-    res.redirect("/work");
-  }else{
-    console.log(req.body.submit);
-    itemsarray.push(item);
-    // Important to redirect, otherwise it waits on pending!
-    res.redirect("/");
-  }
+  // if(req.body.submit === "Work"){
+  //   workTasks.push(item);
+  //   res.redirect("/work");
+  // }else{
+  //   console.log(req.body.submit);
+  //   itemsArray.push(item);
+  //   // Important to redirect, otherwise it waits on pending!
+  //   res.redirect("/");
+  // }
 });
 
 // Work PAGE GET
