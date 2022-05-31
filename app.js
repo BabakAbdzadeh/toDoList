@@ -50,8 +50,6 @@ let workTasks = [];
 // HOME PAGE GET/POST application
 app.get("/", (req, res)=> {
 
-
-
   // storing the day of week in a variable
   var options = {
     weekday: 'long',
@@ -84,6 +82,11 @@ app.get("/", (req, res)=> {
        };
     });
 });
+
+
+app.get('/delete', (req, res)=>{});
+
+
 // gets data from form, and pass after doing logic stuff redirect it
 app.post('/', (req, res) => {
   let item = req.body.toDo;
@@ -95,10 +98,6 @@ app.post('/', (req, res) => {
 newItem.save();
 res.redirect('/');
 
-
-
-
-
   // using recieved value from button to decide which page gonna get the data
   // if(req.body.submit === "Work"){
   //   workTasks.push(item);
@@ -109,6 +108,20 @@ res.redirect('/');
   //   // Important to redirect, otherwise it waits on pending!
   //   res.redirect("/");
   // }
+});
+
+
+
+app.post("/delete", (req, res)=>{
+  const deleteItemId = req.body.checkbox;
+  Item.deleteOne({id : deleteItemId}, (err)=>{
+    if(err){
+      console.log(err);
+    }else{
+      console.log("successfuly deleted");
+    }
+  });
+  res.redirect('/')
 });
 
 // Work PAGE GET

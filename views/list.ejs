@@ -1,31 +1,33 @@
 <%- include('header'); -%>
 
-  <div class="box" id="heading">
-    <!-- Marker for a variable -->
-    <h1><%= pageTitle %></h1>
+<div class="box" id="heading">
+  <!-- Marker for a variable -->
+  <h1><%= pageTitle %></h1>
 
-  </div>
+</div>
 
 
-  <div class="box">
+<div class="box">
 
-    <!-- Genarating rows dynamicaly using JS and EJS -->
-    <% for( var i=0; i<items.length; i++){ %>
+  <!-- Genarating rows dynamicaly using JS and EJS -->
+  <% items.forEach(item=>{ %>
+
+  <form action="/delete" method="post">
     <div class="item">
-
-      <input type="checkbox">
+      <input type="checkbox" name="checkbox" value="<%=item._id%>" onchange="this.form.submit()">
       <!-- its new way due to CSS! -->
-      <p><%= items[i].name %></p>
+      <p><%= item.name %></p>
     </div>
-    <% } %>
+  </form>
+  <% }) %>
 
-<!--item class added to style it similary to other items on the page   -->
-    <form  class="item "action="\" method="post">
-      <input type="text" name="toDo" placeholder="New Item" autocomplete="off">
-      <!-- using page's title to determine the action page of the input data -->
-      <button type="submit" name="submit" value= <%=pageTitle%>>+</button>
-    </form>
+  <!--item class added to style it similary to other items on the page   -->
+  <form class="item " action="/" method="post">
+    <input type="text" name="toDo" placeholder="New Item" autocomplete="off">
+    <!-- using page's title to determine the action page of the input data -->
+    <button type="submit" name="submit" value=<%=pageTitle%>>+</button>
+  </form>
 
-  </div>
+</div>
 
 <%- include('footer'); -%>
