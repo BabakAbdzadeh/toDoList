@@ -114,14 +114,15 @@ res.redirect('/');
 
 app.post("/delete", (req, res)=>{
   const deleteItemId = req.body.checkbox;
-  Item.deleteOne({id : deleteItemId}, (err)=>{
-    if(err){
-      console.log(err);
+
+  Item.findByIdAndRemove(deleteItemId, function(err){
+    if(!err){
+      console.log("Successfully deleted check");
     }else{
-      console.log("successfuly deleted");
+      console.log(err);
     }
   });
-  res.redirect('/')
+  res.redirect('/');
 });
 
 // Work PAGE GET
