@@ -1,8 +1,12 @@
+//jshint esversion:6
+
+
+//  ------------------ requirements ------------------
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 const mongoose = require('mongoose');
-
+var _ = require('lodash');
 
 // Telling our app to use ejs
 // Documentation => gitHub, EJS with expresJs
@@ -15,19 +19,26 @@ app.use(express.static("public"));
 
 
 
+// -------------- setting up magnoose----------------
 // connecting mongoose to database
 mongoose.connect("mongodb://localhost:27017/todolistDB");
 
-// setting up magnoose
 // schema of each document
 const itemsSchema = {
   name: String
 }
 
+const listTitleSchema = {
+  title : String,
+  // Send data as array of object/s
+  data : [itemsSchema]
+}
+
 // model for mongoose
 const Item = mongoose.model('Item', itemsSchema);
+const List = mongoose.model('List', listTitleSchema);
 
-//  creating data for our model
+// ------------------ Plane data-----------------
 const item1 = new Item({
   name: "wake up early"
 });
@@ -41,11 +52,9 @@ const item3 = new Item({
 const defaultItems = [item1, item2, item3];
 
 
-// Global variables:
-let itemsArray = [];
-let workTasks = [];
 
 
+// -------------------- Application -----------------
 
 // HOME PAGE GET/POST application
 app.get("/", (req, res)=> {
@@ -74,6 +83,7 @@ app.get("/", (req, res)=> {
       // redirect to the main route again, otherwise data will not show up on the page because of if statement
       res.redirect("/");
     }else{
+        console.log(results);
     // renders data from DB
          res.render("list", {
            pageTitle: day,
@@ -83,13 +93,46 @@ app.get("/", (req, res)=> {
     });
 });
 
+//  Dynamic render
+app.get("/:listTitle", (req, res)=>{
 
-app.get('/delete', (req, res)=>{});
+  const listTitle = req.params.listTitle;
+
+  List.findOne({title: listTitle}, (err, result)=>{
+if(!err){
+    if(result){
+      console.log(result);
+      res.render('list', {
+        pageTitle: result.title,
+        items: result.data
+      });
+    }else{
+      const newPage = new List({
+        title : listTitle,
+        data: defaultItems
+      });
+
+      newPage.save();
+      res.redirect(`/${listTitle}`);
+
+    };
+  }else{
+    console.log(err);
+  }
+
+  });
+
+
+
+
+});
 
 
 // gets data from form, and pass after doing logic stuff redirect it
 app.post('/', (req, res) => {
   let item = req.body.toDo;
+
+
 
   const newItem = new Item({
     name: item
@@ -98,16 +141,6 @@ app.post('/', (req, res) => {
 newItem.save();
 res.redirect('/');
 
-  // using recieved value from button to decide which page gonna get the data
-  // if(req.body.submit === "Work"){
-  //   workTasks.push(item);
-  //   res.redirect("/work");
-  // }else{
-  //   console.log(req.body.submit);
-  //   itemsArray.push(item);
-  //   // Important to redirect, otherwise it waits on pending!
-  //   res.redirect("/");
-  // }
 });
 
 
@@ -125,15 +158,10 @@ app.post("/delete", (req, res)=>{
   res.redirect('/');
 });
 
-// Work PAGE GET
-// One app post is enough for both pages
-app.get("/work", (req, res) => {
-  res.render("list", {
-    pageTitle: "Work To Do!",
-    items: workTasks
-  });
-})
 
+
+
+// -------------------- Functions -----------------
 
 app.listen(3000, () => {
   console.log("Server started on port 3000")
