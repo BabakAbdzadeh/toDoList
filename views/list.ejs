@@ -14,7 +14,9 @@
 
   <form action="/delete" method="post">
     <div class="item">
-      <input type="checkbox" name="checkbox" value="<%=item._id%>" onchange="this.form.submit()">
+      <!-- Hidden input sends the type of the task -->
+      <input type="hidden" name="submitted" value="<%=item.type%>">
+      <input type="checkbox" name="checkbox" data_value="<%=item.name%>" value="<%=item.name%>" onchange="this.form.submit()">
       <!-- its new way due to CSS! -->
       <p><%= item.name %></p>
     </div>

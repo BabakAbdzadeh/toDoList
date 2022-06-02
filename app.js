@@ -40,7 +40,7 @@ app.get("/", (req, res)=> {
 
 // getting data from DB
   Item.find({type:'toDo'},(err, results)=>{
-    console.log(results);
+
     // renders data from DB
     res.render("list", {
           pageTitle: day,
@@ -53,19 +53,19 @@ app.get("/", (req, res)=> {
 // gets data from form, and pass after doing logic stuff redirect it
 app.post('/', (req, res) => {
   let item = req.body.toDo;
-  console.log("this is item:" + item);
+
   if(req.body.submit === "Work"){
     const newItem = new Item({
       name: item,
-      type: 'work'
+      type: "work"
     });
     newItem.save();
     res.redirect("/work");
   }else{
-    console.log(req.body.submit);
+
     const newItem = new Item({
       name: item,
-      type: 'toDo'
+      type: "toDo"
     });
     newItem.save();
     // Important to redirect, otherwise it waits on pending!
@@ -77,15 +77,30 @@ app.post('/', (req, res) => {
 
 
 app.post("/delete", (req, res)=>{
-  const deleteItemId = req.body.checkbox;
-  Item.deleteOne({id : deleteItemId}, (err)=>{
+  var deleteItemName = req.body.checkbox;
+  var typeOfItem = req.body.submitted;
+
+
+if(typeOfItem === 'toDo'){
+
+  Item.deleteOne({ name : deleteItemName}, (err)=>{
     if(err){
       console.log(err);
     }else{
-      console.log("successfuly deleted");
+      console.log("successfuly deleted ");
     }
   });
   res.redirect('/')
+}else{
+  Item.deleteOne({ name : deleteItemName}, (err)=>{
+    if(err){
+      console.log(err);
+    }else{
+      console.log("successfuly deleted ");
+    }
+  });
+  res.redirect('/work')
+}
 });
 
 
@@ -111,3 +126,4 @@ app.listen(3000, () => {
 
 
 // NO error handeling
+// mongoose.Types.ObjectId(deleteItemName)
