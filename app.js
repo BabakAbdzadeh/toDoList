@@ -91,7 +91,8 @@ var day = today.toLocaleDateString("en-US", options); // E.G. Saturday, Septembe
 //  Dynamic render ------------
 app.get("/:listTitle", (req, res)=>{
 
-  const listTitle = req.params.listTitle;
+  // Using lodash to capitilize the fist character.
+  const listTitle = _.capitalize(req.params.listTitle);
 
   List.findOne({title: listTitle}, (err, result)=>{
 if(!err){
@@ -102,15 +103,18 @@ if(!err){
         items: result.data
       });
     }else{
-      // creating a new list
-      const newPage = new List({
-        title : listTitle,
-        data: defaultItems
-      });
-      console.log(newPage);
+      // creating a new list and check if its not home page
+      if(listTitle !== 'Favicon.ico'){
 
-      newPage.save();
-      res.redirect(`/${listTitle}`);
+        const newPage = new List({
+          title : listTitle,
+          data: defaultItems
+        });
+        console.log(newPage);
+
+        newPage.save();
+        res.redirect(`/${listTitle}`);
+      }
 
     };
   }else{
@@ -128,16 +132,15 @@ if(!err){
 // gets data from form, and pass after doing logic stuff redirect it
 app.post('/', (req, res) => {
   let item = req.body.item;
-  let listName = req.body.pagetitle; // pageTitle and listname are the same
+  let listName = req.body.listName; // pageTitle and listname are the same
 
   const newItem = new Item({
     name: item
   });
   // From the instance of Day() constructor function.
-  // I've added "," to todayName as a trick to make it equal with listName when its containing main route title
-  var todayName  = today.toLocaleDateString("en-US", {weekday: 'long'}) + ",";
+var day = today.toLocaleDateString("en-US", options);
 
-  if(listName === todayName){
+  if(listName === day){
 
     newItem.save();
     res.redirect('/');
@@ -145,7 +148,6 @@ app.post('/', (req, res) => {
   }else{
 
     List.findOne({title: listName}, (err, foundList)=>{
-      console.log("this is the list:" + foundList);
 
       // becuase data is an array of objects easily its pussible to push in.
       foundList.data.push(newItem);
@@ -161,7 +163,13 @@ app.post('/', (req, res) => {
 
 app.post("/delete", (req, res)=>{
   const deleteItemId = req.body.checkbox;
+  const pageTitle = req.body.listName;
 
+  // From the instance of Day() constructor function.
+  var day = today.toLocaleDateString("en-US", options);
+  console.log(day + ' ???' + pageTitle);
+
+if(pageTitle === day){
   Item.findByIdAndRemove(deleteItemId, function(err){
     if(!err){
       console.log("Successfully deleted check");
@@ -170,6 +178,16 @@ app.post("/delete", (req, res)=>{
     }
   });
   res.redirect('/');
+}else{
+  List.findOneAndUpdate({title: pageTitle},{$pull: {data: {_id: deleteItemId}}},(err, foundList)=>{
+    if(!err){
+      res.redirect(`/${pageTitle}`);
+    }
+  });
+
+};
+
+
 });
 
 
@@ -184,7 +202,7 @@ var options = {
 };
 var today = new Date();
 var day = today.toLocaleDateString("en-US", options); // E.G. Saturday, September 17, 2016
-var todayName  = today.toLocaleDateString("en-US", {weekday: 'long'});
+
 
 
 
